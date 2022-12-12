@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Signup-ExploreIt</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="keywords" content="Signup form" id="keywords">
+    </meta>
+    <meta name="decription" id="description" content="Signup to enjoy and explore the world">
+    </meta>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+    <style>
+        .form-container {
+            width: 70%;
+            margin-top: 10vh;
+            border: 1px solid #e0e0e0;
+            padding: 12px 21px;
+            border-radius: 5px;
+            margin-left: 15%;
+            margin-right: 15;
+            height: 73vh;
+            position: fixed;
+            background: #fdfdfd;
+
+        }
+
+        #select-profile {
+            background: rgb(238, 71, 71);
+            padding: 7px 12px;
+            text-align: center;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #input-container,
+        #fullname,
+        #email,
+        #psw,
+        #username,
+        #re_psw {
+            padding: 12px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: block;
+            margin-right: 23px;
+            width: 92%;
+            margin-bottom: 14px;
+            outline: none;
+        }
+
+        #continue {
+            color: white;
+            background: rgb(38, 145, 82);
+            border: none;
+            cursor: pointer;
+            outline: none;
+            padding: 7px 16px;
+            text-align: center;
+            border-radius: 4px;
+            float: right;
+            margin-right: 46px;
+            display: block;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+
+        @media screen and (max-width: 700px) {
+            .form-container {
+                width: 78%;
+                margin-left: -9px;
+                margin-right: 5%;
+                position: absolute;
+                margin-top: 40px;
+                border: none;
+            }
+
+            body {
+                background: #fdfdfd;
+
+            }
+
+            #select-profile {
+                width: 94%;
+                display: block;
+            }
+
+            #continue {
+                width: 89.8%;
+                margin-right: -10px;
+
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <div class="input-container">
+            <br>
+            <center>
+                <font style="color:rgb(255, 60, 60);font-size:32px;">Expl<i class="fa fa-compass"
+                        style="font-size:22px"></i>re</font>
+            </center>
+            <center>
+                <p id="msg" style="color:coral"> </p>
+            </center>
+            <form id="form" method="post">
+                <ul style="list-style-type:none">
+                    <li><input type="email" name="email" id="email" placeholder="Enter email address">
+                    <li> <input type="text" name="username" id="username" placeholder="Enter username">
+                    <li><input type="text" name="fullname" id="fullname" placeholder="Enter your full name">
+                    <li><input type="password" name="password" id="psw" placeholder="Enter password">
+                    <li><input type="password" name="re_password" id="re_psw" placeholder="Retype password">
+
+                    <li><input type="file" name="profile" id="profile" style="display:none;">
+
+                    <li><span id="select-profile"><i class="fas fa-user fa-fw"></i> &nbsp&nbspAdd profile</span>
+                        <font id="img-msg"></font>
+                    </li>
+                </ul>
+
+
+                <button id="continue">Continue</button>
+
+
+
+            </form>
+        </div>
+    </div>
+    <div class="result"></div>
+</body>
+<script>
+    $(document).ready(function () {
+        $("#continue").click(function (e) {
+            e.preventDefault();
+            var email = $("#email").val();
+            var username = $("#username").val();
+            var password = $("#psw").val();
+            var re_password = $("#re_psw").val();
+
+            var name = $("#fullname").val();
+            var profile = $("#profile").val();
+            if (email == "") {
+                $("#msg").html("Email address is required");
+            } else if (username == "") {
+                $("#msg").html("Username is required");
+
+            } else if (name == "") {
+                $("#msg").html("Please enter your name");
+
+            } else if (password == "") {
+                $("#msg").html("Password is required");
+
+            } else if (profile == "") {
+                $("#msg").html("Please select profile picture");
+
+            } else if (re_password == "") {
+                $("#msg").html("Please retype password");
+
+            } else if (re_password != password) {
+
+                $("#msg").html("Password did not match");
+
+            }
+            if (email != "" && username != "" && profile != "" && password != "" && name != "" && password == re_password) {
+                $(".alert-msg").fadeIn();
+                sendData();
+            }
+
+
+            function sendData() {
+                var form = $("#form")[0];
+                var Data = new FormData(form);
+                $.ajax({
+                    url: "createaccount_bck.php",
+                    type: "post",
+                    data: Data,
+                    contentType: false,
+                    processData: false,
+
+                    //data:{email:email,username:username,fullname:name,profile:profile,password:password},
+                    beforeSend: function () {
+                        $(".alert-msg").hide();
+                        $("#msg").html("Just a second").css("color", "purple");
+
+                    },
+                    success: function (data) {
+                        // $("#msg").html(data);
+                        // alert(data);
+                        if (data == "Success") {
+
+                            location.replace("../");
+                            
+                        } else if (data == 'Fail') {
+                            $("#msg").html("Username not available").css("color", "coral");
+
+                        } else{
+                            $("#msg").html(data).css("color", "red");
+
+
+                        }
+                    }
+
+
+                })
+            }
+
+        });
+
+
+        $("#select-profile").click(function () {
+            $("#profile").trigger("click");
+            setInterval(function () {
+                var image = $("#profile").val();
+                if (image != "") {
+                    $("#img-msg").html("Image selected").css({
+                        color: "gray",
+                        "font-size": "17px",
+                        "margin-left": "15px",
+                    });
+                    clearInterval();
+                }
+            }, 2000);
+
+        });
+    });
+</script>
+
+</html>
